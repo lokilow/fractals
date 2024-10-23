@@ -7,10 +7,15 @@ defmodule Fractals.Scene.Home do
 
   import Scenic.Primitives
 
+  @text_size 18
+
   def init(scene, _param, _opts) do
     # get the width and height of the viewport. This is to demonstrate creating
     # a transparent full-screen rectangle to catch user input
     {width, height} = scene.viewport.size
+
+    # this is just a placeholder fo the future nif
+    3 = Fractals.Generate.add(1, 2)
 
     bin = :code.priv_dir(:fractals) |> Path.join(["mandel.png"]) |> File.read!()
     {:ok, img} = Stream.Image.from_binary(bin)
