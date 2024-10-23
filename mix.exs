@@ -23,8 +23,9 @@ defmodule Fractals.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:rustler, "~> 0.35.0", runtime: false},
       {:scenic, "~> 0.11.0"},
-      {:scenic_driver_local, "~> 0.11.0"},
+      {:scenic_driver_local, "~> 0.11.0"}
     ]
   end
 end
