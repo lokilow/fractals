@@ -28,3 +28,4 @@ foo-*.tar
 *.secrets.exs
 
 priv/native/*.so
+priv/__scenic/assets
