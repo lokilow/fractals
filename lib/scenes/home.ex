@@ -14,10 +14,7 @@ defmodule Fractals.Scene.Home do
     # a transparent full-screen rectangle to catch user input
     {width, height} = scene.viewport.size
 
-    # this is just a placeholder fo the future nif
-    3 = Fractals.Generate.add(1, 2)
-
-    bin = :code.priv_dir(:fractals) |> Path.join(["mandel.png"]) |> File.read!()
+    bin = Fractals.Generate.generate() |> dbg()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img) |> dbg()
 
