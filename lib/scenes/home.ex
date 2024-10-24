@@ -14,9 +14,9 @@ defmodule Fractals.Scene.Home do
     # a transparent full-screen rectangle to catch user input
     {width, height} = scene.viewport.size
 
-    bin = Fractals.Generate.generate() |> dbg()
+    bin = Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
-    Stream.put("fractal", img) |> dbg()
+    Stream.put("fractal", img)
 
     graph =
       Graph.build(font: :roboto, font_size: @text_size)

@@ -1,5 +1,4 @@
-use image::codecs::png::PngEncoder;
-use image::{ExtendedColorType, GrayImage, ImageEncoder};
+use image::{GrayImage, Luma};
 use num::Complex;
 
 fn escape_time(c: Complex<f64>, limit: usize) -> Option<usize> {
@@ -53,37 +52,29 @@ fn test_pixel_to_point() {
 }
 
 #[rustler::nif]
-fn generate() -> String {
+fn generate() -> Vec<u8> {
     let bounds = (1000, 1000);
     let upper_left = Complex { re: -1., im: 0. };
     let lower_right = Complex { re: 0., im: -1. };
-    let mut pixels = vec![0; bounds.0 * bounds.1];
 
     // render(&mut pixels, bounds, upper_left, lower_right);
-    assert!(pixels.len() == bounds.0 * bounds.1);
+    let mut img = GrayImage::new(bounds.0 as u32, bounds.1 as u32);
 
     for row in 0..bounds.1 {
         for col in 0..bounds.0 {
             let point = pixel_to_point(bounds, (col, row), upper_left, lower_right);
-            pixels[row * bounds.0 + col] = match escape_time(point, 255) {
+            let pixel = match escape_time(point, 255) {
                 None => 0,
                 Some(count) => 255 - count as u8,
             };
+            img.put_pixel(col as u32, row as u32, Luma::from([pixel]));
         }
     }
-
-    // let result = write_image(&pixels, bounds);
     let mut buf = Vec::new();
-
-    let encoder = PngEncoder::new(&mut buf);
-    let _ = encoder.write_image(
-        &pixels,
-        bounds.0 as u32,
-        bounds.1 as u32,
-        ExtendedColorType::L8,
-    );
-    let bytes = buf.to_vec();
-    String::from_utf8(bytes).expect("Doesn't work!")
+    let encoder = image::codecs::png::PngEncoder::new(&mut buf);
+    img.write_with_encoder(encoder)
+        .expect("could not encode png!");
+    buf
 }
 
 rustler::init!("Elixir.Fractals.Generate");
