@@ -6,7 +6,7 @@ edition = "2021"
 
 [lib]
 name = "fractals"
-path = "src/lib.rs"
+path = "native/fractals/src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
