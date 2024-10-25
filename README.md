@@ -1,3 +1,3 @@
 # Fractals
 
-Exploring fractals using [scenic](https://github.com/ScenicFramework/scenic?tab=readme-ov-file)
+Exploring fractals using [scenic](https://hexdocs.pm/scenic/overview_general.html)
