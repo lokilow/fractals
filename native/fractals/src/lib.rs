@@ -1,5 +1,6 @@
 use image::{GrayImage, Luma};
 use num::Complex;
+use rustler::NifMap;
 
 fn escape_time(c: Complex<f64>, limit: usize) -> Option<usize> {
     let mut z = Complex { re: 0.0, im: 0.0 };
@@ -51,18 +52,37 @@ fn test_pixel_to_point() {
     )
 }
 
+#[derive(NifMap)]
+struct ComplexNifMap {
+    re: f64,
+    im: f64,
+}
+
+impl ComplexNifMap {
+    fn to_complex(&self) -> Complex<f64> {
+        Complex {
+            re: self.re,
+            im: self.im,
+        }
+    }
+}
+
 #[rustler::nif]
-fn generate() -> Vec<u8> {
-    let bounds = (1000, 1000);
-    let upper_left = Complex { re: -1., im: 0. };
-    let lower_right = Complex { re: 0., im: -1. };
+fn generate(
+    image_size: (usize, usize),
+    upper_left_nm: ComplexNifMap,
+    lower_right_nm: ComplexNifMap,
+) -> Vec<u8> {
+    let (width, height) = image_size;
+    let upper_left = upper_left_nm.to_complex();
+    let lower_right = lower_right_nm.to_complex();
 
     // render(&mut pixels, bounds, upper_left, lower_right);
-    let mut img = GrayImage::new(bounds.0 as u32, bounds.1 as u32);
+    let mut img = GrayImage::new(width as u32, height as u32);
 
-    for row in 0..bounds.1 {
-        for col in 0..bounds.0 {
-            let point = pixel_to_point(bounds, (col, row), upper_left, lower_right);
+    for row in 0..height {
+        for col in 0..width {
+            let point = pixel_to_point(image_size, (col, row), upper_left, lower_right);
             let pixel = match escape_time(point, 255) {
                 None => 0,
                 Some(count) => 255 - count as u8,
@@ -77,4 +97,4 @@ fn generate() -> Vec<u8> {
     buf
 }
 
-rustler::init!("Elixir.Fractals.Generate");
+rustler::init!("Elixir.Fractals.Generate.Nif");

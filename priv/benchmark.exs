@@ -3,7 +3,9 @@ function_iterations = 1
 save_dir = "benchmark_results/"
 
 benchmarks = %{
-  "mandelbrot" => fn -> for _ <- 0..function_iterations, do: Fractals.Generate.generate() end
+  "mandelbrot" => fn ->
+    for _ <- 0..function_iterations, do: Fractals.Generate.generate({1000, 1000})
+  end
 }
 
 max_cores = :erlang.system_info(:logical_processors_available)
