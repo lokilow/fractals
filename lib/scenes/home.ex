@@ -10,35 +10,47 @@ defmodule Fractals.Scene.Home do
 
   @text_size 18
 
+  @graph Graph.build(font: :roboto, font_size: @text_size)
+         |> add_specs_to_graph([
+           # this is a placeholder for the navbar
+           rect_spec({1600, 1200}, fill: {:stream, "fractal"})
+         ])
+         |> button("Regenerate", id: :regenerate)
   ## TODO
   ## The UI should have a nav bar that appears on click of a gear. Initially, show parameters for mandelbrot generation, and a generate button.
   ## When generating show a loading icon.
   ## create a navigation panel that zooms in and scrolls up/left/down/etc
   ## should also show x/y coordinates
   def init(scene, _param, _opts) do
-    # get the width and height of the viewport. This is to demonstrate creating
-    # a transparent full-screen rectangle to catch user input
-    {width, height} = scene.viewport.size
-
     bin = Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img)
-
-    graph =
-      Graph.build(font: :roboto, font_size: @text_size)
-      |> add_specs_to_graph([
-        # this is a placeholder for the navbar
-        rect_spec({width, height + 50}, translate: {0, 50}, fill: {:stream, "fractal"})
-      ])
-      |> button("Regenerate", id: :generate)
-
-    scene = push_graph(scene, graph)
+    scene = push_graph(scene, @graph)
 
     {:ok, scene}
   end
 
   def handle_input(event, _context, scene) do
     Logger.info("Handle Input: #{inspect(event)}")
+    {:noreply, scene}
+  end
+
+  def handle_event({:click, :regenerate}, _context, scene) do
+    nil
+    |> Fractals.Generate.generate(
+      %{
+        re: :rand.uniform() * -1,
+        im: :rand.uniform()
+      },
+      %{
+        re: :rand.uniform(),
+        im: :rand.uniform() * -1
+      }
+    )
+    |> :binary.list_to_bin()
+    |> Stream.Image.from_binary()
+    |> then(fn {:ok, bin} -> Stream.put("fractal", bin) end)
+
     {:noreply, scene}
   end
 
