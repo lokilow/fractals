@@ -10,6 +10,7 @@ path = "native/fractals/src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
+crossbeam = "0.8.4"
 image = "0.25.4"
 num = "0.4.3"
 rustler = "0.34.0"
