@@ -13,4 +13,5 @@ crate-type = ["cdylib"]
 crossbeam = "0.8.4"
 image = "0.25.4"
 num = "0.4.3"
+num_cpus = "1.16.0"
 rustler = "0.34.0"
