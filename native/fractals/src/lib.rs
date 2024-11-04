@@ -27,7 +27,7 @@ fn pixel_to_point(
 ) -> Complex<f64> {
     let (width, height) = (
         lower_right.re - upper_left.re,
-        upper_left.im - lower_right.im,
+        lower_right.im - upper_left.im,
     );
 
     Complex {
