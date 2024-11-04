@@ -1,4 +1,5 @@
-use image::{GrayImage, Luma};
+extern crate num_cpus;
+use image::GrayImage;
 use num::Complex;
 use rustler::NifMap;
 
@@ -77,24 +78,59 @@ fn generate(
     let upper_left = upper_left_nm.to_complex();
     let lower_right = lower_right_nm.to_complex();
 
-    // render(&mut pixels, bounds, upper_left, lower_right);
-    let mut img = GrayImage::new(width as u32, height as u32);
+    // count logical cores this process could try to use
+    let threads = num_cpus::get();
+    let rows_per_band = height / threads + 1;
+    let total_pixels = width * height;
+    let mut pixels = vec![0; total_pixels];
 
-    for row in 0..height {
-        for col in 0..width {
-            let point = pixel_to_point(image_size, (col, row), upper_left, lower_right);
-            let pixel = match escape_time(point, 255) {
-                None => 0,
-                Some(count) => 255 - count as u8,
-            };
-            img.put_pixel(col as u32, row as u32, Luma::from([pixel]));
+    let bands: Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * width).collect();
+    crossbeam::scope(|spawner| {
+        for (i, band) in bands.into_iter().enumerate() {
+            let top = rows_per_band * i;
+            let band_height = band.len() / width;
+            let band_bounds = (width, band_height);
+            let band_upper_left =
+                // I think the error is here
+                pixel_to_point((width, height), (0, top), upper_left, lower_right);
+            let band_lower_right = pixel_to_point(
+                (width, height),
+                (width, top + band_height),
+                upper_left,
+                lower_right,
+            );
+            spawner.spawn(move |_| {
+                render(band, band_bounds, band_upper_left, band_lower_right);
+            });
         }
-    }
+    })
+    .unwrap();
+
+    let img = GrayImage::from_vec(width as u32, height as u32, pixels).unwrap();
     let mut buf = Vec::new();
     let encoder = image::codecs::png::PngEncoder::new(&mut buf);
     img.write_with_encoder(encoder)
         .expect("could not encode png!");
     buf
+}
+
+fn render(
+    pixels: &mut [u8],
+    bounds: (usize, usize),
+    upper_left: Complex<f64>,
+    lower_right: Complex<f64>,
+) {
+    let (width, height) = bounds;
+    for row in 0..height {
+        for col in 0..width {
+            let point = pixel_to_point(bounds, (col, row), upper_left, lower_right);
+            let pixel = match escape_time(point, 255) {
+                None => 0,
+                Some(count) => 255 - count as u8,
+            };
+            pixels[row * width + col] = pixel;
+        }
+    }
 }
 
 rustler::init!("Elixir.Fractals.Generate.Nif");
