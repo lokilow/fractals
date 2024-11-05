@@ -1,6 +1,5 @@
 require Logger
 function_iterations = 1
-save_dir = "benchmark_results/"
 
 benchmarks = %{
   "mandelbrot" => fn ->
@@ -14,13 +13,13 @@ Logger.info("max cores: #{max_cores}")
 runs = [1, 2] |> Enum.concat(4..max_cores//4) |> Enum.take_while(&(&1 <= max_cores))
 
 for num_cores <- runs do
-  title = "Cores: #{num_cores}"
+  title = "Parallel - Cores: #{num_cores}"
 
   Benchee.run(
     benchmarks,
-    config = [
+    _config = [
       formatters: [
-        {Benchee.Formatters.JSON, file: "benchmarks/cores:#{num_cores}.json"},
+        {Benchee.Formatters.JSON, file: "benchmarks/parallel-cores:#{num_cores}.json"},
         Benchee.Formatters.Console
       ],
       title: title,
