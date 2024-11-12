@@ -8,8 +8,9 @@ defmodule Fractals.Scene.Home do
   import Scenic.Primitives
 
   @text_size 18
-  @upper_left %{re: -2.5, im: 1.7}
-  @lower_right %{re: 1.5, im: -1.7}
+  @upper_left %{re: -2.05, im: 2.05}
+  @lower_right %{re: 2.05, im: -2.05}
+  @starting_coords {@upper_left, @lower_right}
 
   @graph Graph.build(font: :roboto, font_size: @text_size)
          |> add_specs_to_graph([
@@ -24,7 +25,7 @@ defmodule Fractals.Scene.Home do
   ## create a navigation panel that zooms in and scrolls up/left/down/etc
   ## should also show x/y coordinates
   def init(scene, _param, _opts) do
-    bin = Fractals.Generate.generate() |> :binary.list_to_bin()
+    bin = @starting_coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img)
     scene = push_graph(scene, @graph)
@@ -40,14 +41,14 @@ defmodule Fractals.Scene.Home do
   def handle_event({:click, :regenerate}, _context, scene) do
     nil
     |> Fractals.Generate.generate(
-      %{
-        re: :rand.uniform() * -1,
-        im: :rand.uniform()
-      },
-      %{
-        re: :rand.uniform(),
-        im: :rand.uniform() * -1
-      }
+      {%{
+         re: :rand.uniform() * -1,
+         im: :rand.uniform()
+       },
+       %{
+         re: :rand.uniform(),
+         im: :rand.uniform() * -1
+       }}
     )
     |> :binary.list_to_bin()
     |> Stream.Image.from_binary()

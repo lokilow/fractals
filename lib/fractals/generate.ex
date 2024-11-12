@@ -6,11 +6,7 @@ defmodule Fractals.Generate do
       do: :erlang.nif_error(:nif_not_loaded)
   end
 
-  def generate(
-        image_size \\ nil,
-        upper_left \\ %{re: -2.5, im: 1.7},
-        lower_right \\ %{re: 1.5, im: -1.7}
-      ) do
+  def generate(image_size \\ nil, {upper_left, lower_right}) do
     {width, height} =
       if image_size do
         image_size
