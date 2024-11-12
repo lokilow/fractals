@@ -29,7 +29,7 @@ jobs:
       - name: Update apt
         run: sudo apt update # && sudo apt upgrade
       - name: Install build tools
-        run: sudo apt install -y  build-essential pkgconf  libglfw3 libglfw3-dev libglew-dev
+        run: sudo apt install -y  build-essential pkgconf libglfw3 libglfw3-dev libglew-dev
       - name: Restore dependencies cache
         uses: actions/cache@v3
         with:
@@ -40,5 +40,7 @@ jobs:
         run: mix deps.get
       - name: Check formatting
         run: mix format --check-formatted
-      - name: Run tests
+      - name: Run Cargo tests
+        run: cargo test
+      - name: Run Elixir tests
         run: mix test --no-start
