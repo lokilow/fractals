@@ -1,4 +1,3 @@
-require Logger
 # get main viewport
 mv = fn ->
   {:ok, vp} = Scenic.ViewPort.info(:main_viewport)
