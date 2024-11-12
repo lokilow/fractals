@@ -11,16 +11,3 @@ rl = fn ->
   vp = mv.()
   :ok = Scenic.ViewPort.set_theme(vp, :dark)
 end
-
-# restart app
-rs =
-  fn ->
-    recompile()
-
-    try do
-      exit(:restart)
-    catch
-      :exit, :restart ->
-        :ok = Logger.debug("Restarting App")
-    end
-  end
