@@ -6,16 +6,18 @@ defmodule Fractals.Scene.Home do
   alias Scenic.Assets.Stream
 
   import Scenic.Primitives
-  import Scenic.Components
 
   @text_size 18
+  @upper_left %{re: -2.5, im: 1.7}
+  @lower_right %{re: 1.5, im: -1.7}
 
   @graph Graph.build(font: :roboto, font_size: @text_size)
          |> add_specs_to_graph([
            # this is a placeholder for the navbar
            rect_spec({1600, 1200}, fill: {:stream, "fractal"})
          ])
-         |> button("Regenerate", id: :regenerate)
+         |> Fractals.Components.Nav.add_to_graph({@upper_left, @lower_right})
+
   ## TODO
   ## The UI should have a nav bar that appears on click of a gear. Initially, show parameters for mandelbrot generation, and a generate button.
   ## When generating show a loading icon.

@@ -8,8 +8,8 @@ defmodule Fractals.Generate do
 
   def generate(
         image_size \\ nil,
-        upper_left \\ %{re: -1.0, im: 0.0},
-        lower_right \\ %{re: 0.0, im: -1.0}
+        upper_left \\ %{re: -2.5, im: 1.7},
+        lower_right \\ %{re: 1.5, im: -1.7}
       ) do
     {width, height} =
       if image_size do
