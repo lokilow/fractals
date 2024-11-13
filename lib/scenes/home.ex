@@ -8,8 +8,8 @@ defmodule Fractals.Scene.Home do
   import Scenic.Primitives
 
   @text_size 18
-  @upper_left %{re: -2.05, im: 2.05}
-  @lower_right %{re: 2.05, im: -2.05}
+  @upper_left %{re: -2.05, im: 2.25}
+  @lower_right %{re: 2.05, im: -2.25}
   @starting_coords {@upper_left, @lower_right}
 
   @graph Graph.build(font: :roboto, font_size: @text_size)
