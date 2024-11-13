@@ -12,53 +12,47 @@ defmodule Fractals.Scene.Home do
   @lower_right %{re: 2.05, im: -2.25}
   @starting_coords {@upper_left, @lower_right}
 
-  @graph Graph.build(font: :roboto, font_size: @text_size)
+  @graph [font: :roboto, font_size: @text_size]
+         |> Graph.build()
          |> add_specs_to_graph([
            # this is a placeholder for the navbar
            rect_spec({1600, 1200}, fill: {:stream, "fractal"})
          ])
-         |> Fractals.Components.Nav.add_to_graph({@upper_left, @lower_right})
 
-  ## TODO
-  ## The UI should have a nav bar that appears on click of a gear. Initially, show parameters for mandelbrot generation, and a generate button.
-  ## When generating show a loading icon.
-  ## create a navigation panel that zooms in and scrolls up/left/down/etc
-  ## should also show x/y coordinates
+  @impl true
   def init(scene, _param, _opts) do
     bin = @starting_coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img)
-    scene = push_graph(scene, @graph)
+    graph = @graph |> Fractals.Components.Nav.add_to_graph({@upper_left, @lower_right}, id: :nav)
 
-    {:ok, scene}
+    {:ok, scene |> assign(coords: @starting_coords) |> push_graph(graph)}
   end
 
-  def handle_input(event, _context, scene) do
-    Logger.info("Handle Input: #{inspect(event)}")
+  @impl true
+  def handle_input(input, id, scene) do
+    Logger.info("\n#{__MODULE__}: Handle Input\nInput: #{inspect(input)}\nId: #{inspect(id)}")
     {:noreply, scene}
   end
 
-  def handle_event({:click, :regenerate}, _context, scene) do
-    nil
-    |> Fractals.Generate.generate(
-      {%{
-         re: :rand.uniform() * -1,
-         im: :rand.uniform()
-       },
-       %{
-         re: :rand.uniform(),
-         im: :rand.uniform() * -1
-       }}
-    )
-    |> :binary.list_to_bin()
-    |> Stream.Image.from_binary()
-    |> then(fn {:ok, bin} -> Stream.put("fractal", bin) end)
+  @impl true
+  def handle_event({:new_coords, coords}, _from, scene) do
+    if coords != scene.assigns.coords do
+      Logger.info("#{__MODULE__}: Updating Coords!\nNew Coords: #{inspect(coords)}")
+      bin = coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
+      {:ok, img} = Stream.Image.from_binary(bin)
+      Stream.put("fractal", img)
 
-    {:noreply, scene}
+      graph = @graph |> Fractals.Components.Nav.add_to_graph(coords)
+
+      {:noreply, scene |> assign(coords: coords) |> push_graph(graph)}
+    else
+      {:noreply, scene}
+    end
   end
 
-  def handle_event(event, _context, scene) do
-    Logger.info("Handle Event: #{inspect(event)}")
+  def handle_event(event, from, scene) do
+    Logger.info("\n#{__MODULE__}: Handle Event\nEvent: #{inspect(event)}\nFrom: #{inspect(from)}")
     {:noreply, scene}
   end
 end
