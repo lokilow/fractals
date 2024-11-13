@@ -136,12 +136,6 @@ fn escape_time(c: Complex<f64>, limit: usize) -> Option<usize> {
     for i in 0..=limit {
         // z diverges if its radius is greater than 2
         if z.norm_sqr() > 4.0 {
-            if i <= 16 {
-                return Some(256 - 16 * i);
-            }
-            if i == 17 {
-                return Some(255);
-            }
             return Some(i);
         }
         z = z * z + c
