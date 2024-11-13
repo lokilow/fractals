@@ -3,8 +3,8 @@ defmodule Fractals.Components.Nav do
   import Scenic.Components, only: [button: 3]
   require Logger
 
-  @translate_coefficent 0.05
-  @zoom_coefficient 0.1
+  @translate_coefficent 0.08
+  @zoom_coefficient 0.15
 
   @impl true
   def validate({_upper_left, _lower_right} = coords), do: {:ok, coords}
