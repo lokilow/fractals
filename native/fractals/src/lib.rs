@@ -116,9 +116,9 @@ fn render(
     for row in 0..height {
         for col in 0..width {
             let point = pixel_to_point(bounds, (col, row), upper_left, lower_right);
-            let pixel = match escape_time(point, 255) {
+            let pixel = match escape_time(point, 255 / 8) {
                 None => 0,
-                Some(count) => 255 - count as u8,
+                Some(count) => 255 - 8 * count as u8,
             };
             pixels[row * width + col] = pixel;
         }
