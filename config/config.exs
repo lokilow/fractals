@@ -15,13 +15,17 @@ config :fractals, :viewport,
     [
       module: Scenic.Driver.Local,
       name: :local,
-      window: [resizeable: false, title: "fractals"],
+      limit_ms: 1000,
+      layer: 0,
+      opacity: 1,
+      debug: true,
       window: [resizeable: true, title: "fractals"],
       position: [
         scaled: false,
         centered: false,
         orientation: :normal
       ],
+      cursor: true,
       on_close: :stop_system
     ]
   ]
