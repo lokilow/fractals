@@ -2,29 +2,33 @@ defmodule Fractals.Scene.Home do
   use Scenic.Scene
   require Logger
 
-  alias Scenic.Graph
   alias Scenic.Assets.Stream
 
   import Scenic.Primitives
 
-  @text_size 18
   @upper_left %{re: -2.05, im: 2.25}
   @lower_right %{re: 2.05, im: -2.25}
   @starting_coords {@upper_left, @lower_right}
 
-  @graph [font: :roboto, font_size: @text_size]
-         |> Graph.build()
-         |> add_specs_to_graph([
-           # this is a placeholder for the navbar
-           rect_spec({1600, 1200}, fill: {:stream, "fractal"})
-         ])
+  @graph [] |> Scenic.Graph.build()
+
+  def graph(viewport, {_ul, _lr} = coords) do
+    @graph
+    |> rect(viewport.size,
+      fill: {:stream, "fractal"},
+      input: [:relative]
+    )
+    |> Fractals.Components.Nav.add_to_graph(coords, id: :nav)
+  end
 
   @impl true
   def init(scene, _param, _opts) do
+    dbg(scene)
     bin = @starting_coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img)
-    graph = @graph |> Fractals.Components.Nav.add_to_graph({@upper_left, @lower_right}, id: :nav)
+
+    graph = graph(scene.viewport, {@upper_left, @lower_right})
 
     {:ok, scene |> assign(coords: @starting_coords) |> push_graph(graph)}
   end
@@ -43,7 +47,7 @@ defmodule Fractals.Scene.Home do
       {:ok, img} = Stream.Image.from_binary(bin)
       Stream.put("fractal", img)
 
-      graph = @graph |> Fractals.Components.Nav.add_to_graph(coords)
+      graph = graph(scene.viewport, coords)
 
       {:noreply, scene |> assign(coords: coords) |> push_graph(graph)}
     else
