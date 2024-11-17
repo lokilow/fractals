@@ -1,6 +1,6 @@
 require Logger
-function_iterations = 1
 
+function_iterations = 1
 bounds = {%{re: -2.0, im: 2.0}, %{re: 2.0, im: -2.0}}
 
 benchmarks = %{
@@ -10,7 +10,7 @@ benchmarks = %{
   end
 }
 
-title = "Parallel-Crossbeam"
+title = "Parallel-Rayon"
 
 Benchee.run(
   benchmarks,

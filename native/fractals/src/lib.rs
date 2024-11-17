@@ -1,6 +1,6 @@
-extern crate num_cpus;
 use image::GrayImage;
 use num::Complex;
+use rayon::prelude::*;
 use rustler::NifMap;
 
 #[derive(NifMap)]
@@ -29,34 +29,20 @@ fn generate(
     let lower_right = lower_right_nm.to_complex();
 
     // count logical cores this process could try to use
-    let threads = num_cpus::get();
-    let rows_per_band = height / threads + 1;
     let total_pixels = width * height;
     let mut pixels = vec![0; total_pixels];
 
-    let bands: Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * width).collect();
-    crossbeam::scope(|spawner| {
-        for (i, band) in bands.into_iter().enumerate() {
-            let top = rows_per_band * i;
-            let band_height = band.len() / width;
-            let band_bounds = (width, band_height);
+    let bands: Vec<(usize, &mut [u8])> = pixels.chunks_mut(width).enumerate().collect();
+    bands.into_par_iter().for_each(|(i, band)| {
+        let top = i;
+        let band_bounds = (width, 1);
 
-            let band_upper_left =
-                pixel_to_point((width, height), (0, top), upper_left, lower_right);
+        let band_upper_left = pixel_to_point((width, height), (0, top), upper_left, lower_right);
 
-            let band_lower_right = pixel_to_point(
-                (width, height),
-                (width, top + band_height),
-                upper_left,
-                lower_right,
-            );
-
-            spawner.spawn(move |_| {
-                render(band, band_bounds, band_upper_left, band_lower_right);
-            });
-        }
-    })
-    .unwrap();
+        let band_lower_right =
+            pixel_to_point((width, height), (width, top + 1), upper_left, lower_right);
+        render(band, band_bounds, band_upper_left, band_lower_right);
+    });
 
     let mut buf = Vec::new();
     let encoder = image::codecs::png::PngEncoder::new(&mut buf);
