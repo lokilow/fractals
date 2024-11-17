@@ -23,7 +23,6 @@ defmodule Fractals.Scene.Home do
 
   @impl true
   def init(scene, _param, _opts) do
-    dbg(scene)
     bin = @starting_coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
     {:ok, img} = Stream.Image.from_binary(bin)
     Stream.put("fractal", img)
