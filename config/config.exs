@@ -8,7 +8,7 @@ config :scenic, :assets, module: Fractals.Assets
 # Configure the main viewport for the Scenic application
 config :fractals, :viewport,
   name: :main_viewport,
-  size: {1800, 1200},
+  size: {1200, 1200},
   theme: :dark,
   default_scene: Fractals.Scene.Home,
   drivers: [
