@@ -2,8 +2,8 @@ defmodule Fractals.Scene.Home do
   use Scenic.Scene
   require Logger
 
-  @upper_left %{re: -2.5, im: 2.5}
-  @lower_right %{re: 2.5, im: -2.5}
+  @upper_left %{re: -2.05, im: 2.25}
+  @lower_right %{re: 2.05, im: -2.75}
   @starting_coords {@upper_left, @lower_right}
 
   @graph [] |> Scenic.Graph.build()
