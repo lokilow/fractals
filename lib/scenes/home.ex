@@ -4,20 +4,17 @@ defmodule Fractals.Scene.Home do
 
   alias Scenic.Assets.Stream
 
-  import Scenic.Primitives
-
-  @upper_left %{re: -2.05, im: 2.25}
-  @lower_right %{re: 2.05, im: -2.75}
+  @upper_left %{re: -2.5, im: 2.5}
+  @lower_right %{re: 2.5, im: -2.5}
   @starting_coords {@upper_left, @lower_right}
 
   @graph [] |> Scenic.Graph.build()
 
   def graph(viewport, {_ul, _lr} = coords) do
+    translate = {100, 300}
+
     @graph
-    |> rect(viewport.size,
-      fill: {:stream, "fractal"},
-      input: [:relative]
-    )
+    |> Fractals.Components.Tiler.add_to_graph({viewport.size, translate}, id: :tiler)
     |> Fractals.Components.Nav.add_to_graph(coords, id: :nav)
   end
 
@@ -42,9 +39,6 @@ defmodule Fractals.Scene.Home do
   def handle_event({:new_coords, coords}, _from, scene) do
     if coords != scene.assigns.coords do
       Logger.info("#{__MODULE__}: Updating Coords!\nNew Coords: #{inspect(coords)}")
-      bin = coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
-      {:ok, img} = Stream.Image.from_binary(bin)
-      Stream.put("fractal", img)
 
       graph = graph(scene.viewport, coords)
 
