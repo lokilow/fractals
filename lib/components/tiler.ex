@@ -14,13 +14,13 @@ defmodule Fractals.Components.Tiler do
       fn graph ->
         graph
         # top left
-        |> rect({600, 600}, id: "r00", translate: {0, 0}, fill: {:stream, "r00"})
+        |> rect({600, 600}, id: "t00", translate: {0, 0}, fill: {:stream, "t00"})
         # top right
-        |> rect({600, 600}, id: "r10", translate: {600, 0}, fill: {:stream, "r10"})
+        |> rect({600, 600}, id: "t10", translate: {599, 0}, fill: {:stream, "t10"})
         # bottom left
-        |> rect({600, 600}, id: "r01", translate: {0, 600}, fill: :blue)
+        |> rect({600, 600}, id: "t01", translate: {0, 599}, fill: {:stream, "t01"})
         # bottom right
-        |> rect({600, 600}, id: "r11", translate: {600, 600}, fill: :green)
+        |> rect({600, 600}, id: "t11", translate: {599, 599}, fill: {:stream, "t11"})
       end,
       translate: translate
     )

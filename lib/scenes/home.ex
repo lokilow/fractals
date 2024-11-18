@@ -2,8 +2,6 @@ defmodule Fractals.Scene.Home do
   use Scenic.Scene
   require Logger
 
-  alias Scenic.Assets.Stream
-
   @upper_left %{re: -2.5, im: 2.5}
   @lower_right %{re: 2.5, im: -2.5}
   @starting_coords {@upper_left, @lower_right}
@@ -11,7 +9,7 @@ defmodule Fractals.Scene.Home do
   @graph [] |> Scenic.Graph.build()
 
   def graph(viewport, {_ul, _lr} = coords) do
-    translate = {100, 300}
+    translate = {0, 0}
 
     @graph
     |> Fractals.Components.Tiler.add_to_graph({viewport.size, translate}, id: :tiler)
@@ -20,9 +18,7 @@ defmodule Fractals.Scene.Home do
 
   @impl true
   def init(scene, _param, _opts) do
-    bin = @starting_coords |> Fractals.Generate.generate() |> :binary.list_to_bin()
-    {:ok, img} = Stream.Image.from_binary(bin)
-    Stream.put("fractal", img)
+    Fractals.TileServer.generate_tiles({@upper_left, @lower_right}, {2, 2})
 
     graph = graph(scene.viewport, {@upper_left, @lower_right})
 
